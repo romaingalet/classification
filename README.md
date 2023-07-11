@@ -8,5 +8,5 @@ url = https://code.earthengine.google.com/
 ![saisie_annot](https://github.com/romaingalet/classification/assets/87038114/359cf7ab-3e7a-4713-9a1d-dfa998e98145 =50x25)
 
 ### 1.2 - Classification
-![classification](https://github.com/romaingalet/classification/assets/87038114/58019272-9dfa-4b40-beb6-de80bfd1dc27  =50x25)
+![classification](https://github.com/romaingalet/classification/assets/87038114/58019272-9dfa-4b40-beb6-de80bfd1dc27 =50x25)
 
