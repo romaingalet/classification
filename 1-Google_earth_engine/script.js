@@ -1,12 +1,10 @@
 var countries = ee.FeatureCollection("USDOS/LSIB_SIMPLE/2017");
-// var roiF = countries.filter(ee.Filter.eq('country_na', 'France'));
-// Map.addLayer(roiF, {}, 'France', true);
 
 var roi = ee.Geometry.Rectangle([
-    ee.Geometry.Point(1.67, 43.26),  
-    ee.Geometry.Point(1.87, 43.36)
+    ee.Geometry.Point(2.30, 49.20),  
+    ee.Geometry.Point(3.00, 49.60)
   ]);
-Map.addLayer(roi, {}, 'zone31', true);
+Map.addLayer(roi, {}, 'zone60', true);
 
 var image = ee.ImageCollection("COPERNICUS/S2_SR")
 .filterDate('2020-01-01', '2020-01-30')
@@ -18,7 +16,7 @@ var visParamsTrue = {bands: ['B4', 'B5', 'B2'], min:0, max:2500, gamma:1.1};
 Map.addLayer(image.clip(roi), visParamsTrue, 'Sentinel 2020');
 Map.centerObject(roi, 8);
 
-var training = water.merge(cropland).merge(forest).merge(urban);
+var training = water.merge(cropland).merge(deciduous).merge(urban).merge(coniferous);
 print(training);
 
 var label = 'Class';
@@ -26,9 +24,9 @@ var bands = ['B2', 'B3', 'B4', 'B8'];
 var input = image.select(bands);
 
 var trainImage = input.sampleRegions({
- collection: training,
- properties: [label],
- scale: 30
+collection: training,
+properties: [label],
+scale: 30
 }) 
 
 var trainingData = trainImage.randomColumn();
@@ -40,10 +38,21 @@ var classifier = ee.Classifier.smileCart().train(trainSet, label, bands);
 var classified = input.classify(classifier);
 
 var landcoverPalette= [
-    '253494',
-    '006837',
+    '0a60f5',
+    '34ed50',
     '000000',
     'FF8000',
+    '006837',
   ]
   
-Map.addLayer(classified.clip(roi), {palette: landcoverPalette, min:0, max:3}, 'Classification CART');
+Map.addLayer(classified.clip(roi), {palette: landcoverPalette, min:0, max:4}, 'Classification CART');
+
+Export.image.toDrive({
+image: classified.clip(roi),
+description: "Sentinel_2_CART",
+scale: 10,
+region: roi,
+maxPixels:1e13,
+folder: 'ee_demos',
+crs:'EPSG:2154'
+})
